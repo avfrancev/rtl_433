@@ -29,9 +29,9 @@ add_library(r_433 STATIC
     output_trigger.c
     output_udp.c
     pulse_analyzer.c
+    pulse_demod.c
     pulse_detect.c
     pulse_detect_fsk.c
-    pulse_slicer.c
     r_api.c
     r_util.c
     raw_output.c
@@ -46,7 +46,6 @@ add_library(r_433 STATIC
     devices/acurite_01185m.c
     devices/akhan_100F14.c
     devices/alecto.c
-    devices/altronics_x7064.c
     devices/ambient_weather.c
     devices/ambientweather_tx8300.c
     devices/ambientweather_wh31e.c
@@ -87,7 +86,6 @@ add_library(r_433 STATIC
     devices/elro_db286a.c
     devices/elv.c
     devices/emontx.c
-    devices/emos_e6016.c
     devices/enocean_erp1.c
     devices/ert_idm.c
     devices/ert_scm.c
@@ -236,6 +234,51 @@ if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_C_COMPILER_ID}" MATCHES "
     set_source_files_properties(mongoose.c PROPERTIES COMPILE_FLAGS "-w")
 endif()
 
+function(add_compile_flag value)
+  message(STATUS "Building with ${value}")
+  foreach(variable CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+    set(${variable} "${${variable}} ${value}" PARENT_SCOPE)
+  endforeach(variable)
+endfunction()
+
+function(add_link_flag value)
+  message(STATUS "Linking with ${value}")
+  foreach(variable CMAKE_EXE_LINKER_FLAGS CMAKE_SHARED_LINKER_FLAGS)
+    set(${variable} "${${variable}} ${value}" PARENT_SCOPE)
+  endforeach(variable)
+endfunction()
+
+if(EMSCRIPTEN)
+  # link with -O3 for metadce and other powerful optimizations. note that we
+  # must use add_link_options so that this appears after CMake's default -O2
+  # add_link_options("-O3")
+  # add_link_flag("-s SINGLE_FILE")
+  add_link_flag("-s ALLOW_MEMORY_GROWTH=1")
+  add_compile_flag("-s DISABLE_EXCEPTION_CATCHING=0")
+  add_link_flag("-s DISABLE_EXCEPTION_CATCHING=0")
+  # add_link_flag("-s EXPORTED_FUNCTIONS=_main")
+  add_link_flag("-s FORCE_FILESYSTEM=1")
+  add_link_flag("-s WASM=1")
+  # add_link_flag("--closure 0")
+  add_link_flag("-s EXIT_RUNTIME=0")
+  add_link_flag("-s RESERVED_FUNCTION_POINTERS=1")
+  add_link_flag("-s MODULARIZE=1")
+  add_link_flag("-s ENVIRONMENT=web")
+  add_link_flag("-s INVOKE_RUN=0")
+  add_link_flag("-s EXPORT_ES6=1")
+  add_link_flag("-s EXPORTED_FUNCTIONS=_main")
+  add_link_flag("-s EXPORTED_RUNTIME_METHODS=FS,addFunction,removeFunction,ccall,cwrap,callMain,getValue,setValue,stringToUTF8,allocateUTF8OnStack")
+  add_link_flag("-s ASSERTIONS=2")
+  add_link_flag("-s INITIAL_MEMORY=156MB")
+  add_link_flag("-s TOTAL_STACK=32MB")
+  # add_link_flag("-fsanitize=undefined")
+  # make the tools immediately usable on Node.js
+  # add_link_flag("-s NODERAWFS")
+  # in opt builds, LTO helps so much (>20%) it's worth slow compile times
+  # add_nondebug_compile_flag("-flto")
+endif()
+
+# set(CMAKE_EXECUTABLE_SUFFIX ".html")
 add_executable(rtl_433 rtl_433.c)
 target_link_libraries(rtl_433 r_433)
 

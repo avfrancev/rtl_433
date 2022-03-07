@@ -27,6 +27,13 @@ On MacOS, `brew install rtl_433`.
 
 Docker images with rtl_433 are available [on the github page of hertzg](https://github.com/hertzg/rtl_433_docker).
 
+## Building with emscripten
+``` bash
+mkdir build && cd build
+emcmake cmake -DENABLE_RTLSDR=OFF ..
+emmake make -j4
+```
+
 ## How to add support for unsupported sensors
 
 See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
@@ -37,12 +44,12 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
 ```
 
-		= General options =
+          = General options =
   [-V] Output the version string and exit
   [-v] Increase verbosity (can be used multiple times).
        -v : verbose, -vv : verbose decoders, -vvv : debug decoders, -vvvv : trace decoding).
   [-c <path>] Read config options from a file
-		= Tuner options =
+          = Tuner options =
   [-d <RTL-SDR USB device index> | :<RTL-SDR USB device serial> | <SoapySDR device query> | rtl_tcp | help]
   [-g <gain> | help] (default: auto)
   [-t <settings>] apply a list of keyword=value settings for SoapySDR devices
@@ -51,7 +58,7 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
   [-H <seconds>] Hop interval for polling of multiple frequencies (default: 600 seconds)
   [-p <ppm_error>] Correct rtl-sdr tuner frequency offset error (default: 0)
   [-s <sample rate>] Set sample rate (default: 250000 Hz)
-		= Demodulator options =
+          = Demodulator options =
   [-R <device> | help] Enable only the specified device decoding protocol (can be used multiple times)
        Specify a negative number to disable a device decoding protocol (can be used multiple times)
   [-X <spec> | help] Add a general purpose decoder (prepend -R 0 to disable all decoders)
@@ -62,18 +69,18 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
   [-Y autolevel] Set minlevel automatically based on average estimated noise.
   [-Y squelch] Skip frames below estimated noise level to reduce cpu load.
   [-Y ampest | magest] Choose amplitude or magnitude level estimator.
-		= Analyze/Debug options =
+          = Analyze/Debug options =
   [-a] Analyze mode. Print a textual description of the signal.
   [-A] Pulse Analyzer. Enable pulse analysis and decode attempt.
        Disable all decoders with -R 0 if you want analyzer output only.
   [-y <code>] Verify decoding of demodulated test data (e.g. "{25}fb2dd58") with enabled devices
-		= File I/O options =
+          = File I/O options =
   [-S none | all | unknown | known] Signal auto save. Creates one file per signal.
        Note: Saves raw I/Q samples (uint8 pcm, 2 channel). Preferred mode for generating test files.
   [-r <filename> | help] Read data from input file instead of a receiver
   [-w <filename> | help] Save data stream to output file (a '-' dumps samples to stdout)
   [-W <filename> | help] Save data stream to output file, overwrite existing file
-		= Data output options =
+          = Data output options =
   [-F kv | json | csv | mqtt | influx | syslog | trigger | null | help] Produce decoded output in given format.
        Append output to file with :<filename> (e.g. -F csv:log.csv), defaults to stdout.
        Specify host/port for syslog with e.g. -F syslog:127.0.0.1:1514
@@ -88,7 +95,7 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
 
 
-		= Supported device protocols =
+          = Supported device protocols =
     [01]  Silvercrest Remote Control
     [02]  Rubicson Temperature Sensor
     [03]  Prologue, FreeTec NC-7104, NC-7159-675 temperature sensor
@@ -296,60 +303,58 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
     [211]  Regency Ceiling Fan Remote (-f 303.75M to 303.96M)
     [212]  Renault 0435R TPMS
     [213]  Fine Offset Electronics WS80 weather station
-    [214]  EMOS E6016 weatherstation with DCF77
-    [215]  Altronics X7064 temperature and humidity sensor
 
 * Disabled by default, use -R n or -G
 
 
-		= Input device selection =
-	RTL-SDR device driver is available.
+          = Input device selection =
+     RTL-SDR device driver is available.
   [-d <RTL-SDR USB device index>] (default: 0)
   [-d :<RTL-SDR USB device serial (can be set with rtl_eeprom -s)>]
-	To set gain for RTL-SDR use -g <gain> to set an overall gain in dB.
-	SoapySDR device driver is available.
+     To set gain for RTL-SDR use -g <gain> to set an overall gain in dB.
+     SoapySDR device driver is available.
   [-d ""] Open default SoapySDR device
   [-d driver=rtlsdr] Open e.g. specific SoapySDR device
-	To set gain for SoapySDR use -g ELEM=val,ELEM=val,... e.g. -g LNA=20,TIA=8,PGA=2 (for LimeSDR).
+     To set gain for SoapySDR use -g ELEM=val,ELEM=val,... e.g. -g LNA=20,TIA=8,PGA=2 (for LimeSDR).
   [-d rtl_tcp[:[//]host[:port]] (default: localhost:1234)
-	Specify host/port to connect to with e.g. -d rtl_tcp:127.0.0.1:1234
+     Specify host/port to connect to with e.g. -d rtl_tcp:127.0.0.1:1234
 
 
-		= Gain option =
+          = Gain option =
   [-g <gain>] (default: auto)
-	For RTL-SDR: gain in dB ("0" is auto).
-	For SoapySDR: gain in dB for automatic distribution ("" is auto), or string of gain elements.
-	E.g. "LNA=20,TIA=8,PGA=2" for LimeSDR.
+     For RTL-SDR: gain in dB ("0" is auto).
+     For SoapySDR: gain in dB for automatic distribution ("" is auto), or string of gain elements.
+     E.g. "LNA=20,TIA=8,PGA=2" for LimeSDR.
 
 
-		= Flex decoder spec =
+          = Flex decoder spec =
 Use -X <spec> to add a flexible general purpose decoder.
 
 <spec> is "key=value[,key=value...]"
 Common keys are:
-	name=<name> (or: n=<name>)
-	modulation=<modulation> (or: m=<modulation>)
-	short=<short> (or: s=<short>)
-	long=<long> (or: l=<long>)
-	sync=<sync> (or: y=<sync>)
-	reset=<reset> (or: r=<reset>)
-	gap=<gap> (or: g=<gap>)
-	tolerance=<tolerance> (or: t=<tolerance>)
-	priority=<n> : run decoder only as fallback
+     name=<name> (or: n=<name>)
+     modulation=<modulation> (or: m=<modulation>)
+     short=<short> (or: s=<short>)
+     long=<long> (or: l=<long>)
+     sync=<sync> (or: y=<sync>)
+     reset=<reset> (or: r=<reset>)
+     gap=<gap> (or: g=<gap>)
+     tolerance=<tolerance> (or: t=<tolerance>)
+     priority=<n> : run decoder only as fallback
 where:
 <name> can be any descriptive name tag you need in the output
 <modulation> is one of:
-	OOK_MC_ZEROBIT :  Manchester Code with fixed leading zero bit
-	OOK_PCM :         Pulse Code Modulation (RZ or NRZ)
-	OOK_PPM :         Pulse Position Modulation
-	OOK_PWM :         Pulse Width Modulation
-	OOK_DMC :         Differential Manchester Code
-	OOK_PIWM_RAW :    Raw Pulse Interval and Width Modulation
-	OOK_PIWM_DC :     Differential Pulse Interval and Width Modulation
-	OOK_MC_OSV1 :     Manchester Code for OSv1 devices
-	FSK_PCM :         FSK Pulse Code Modulation
-	FSK_PWM :         FSK Pulse Width Modulation
-	FSK_MC_ZEROBIT :  Manchester Code with fixed leading zero bit
+     OOK_MC_ZEROBIT :  Manchester Code with fixed leading zero bit
+     OOK_PCM :         Pulse Code Modulation (RZ or NRZ)
+     OOK_PPM :         Pulse Position Modulation
+     OOK_PWM :         Pulse Width Modulation
+     OOK_DMC :         Differential Manchester Code
+     OOK_PIWM_RAW :    Raw Pulse Interval and Width Modulation
+     OOK_PIWM_DC :     Differential Pulse Interval and Width Modulation
+     OOK_MC_OSV1 :     Manchester Code for OSv1 devices
+     FSK_PCM :         FSK Pulse Code Modulation
+     FSK_PWM :         FSK Pulse Width Modulation
+     FSK_MC_ZEROBIT :  Manchester Code with fixed leading zero bit
 <short>, <long>, <sync> are nominal modulation timings in us,
 <reset>, <gap>, <tolerance> are maximum modulation timings in us:
 PCM     short: Nominal width of pulse [us]
@@ -363,103 +368,103 @@ common    gap: Maximum gap size before new row of bits [us]
         reset: Maximum gap size before End Of Message [us]
     tolerance: Maximum pulse deviation [us] (optional).
 Available options are:
-	bits=<n> : only match if at least one row has <n> bits
-	rows=<n> : only match if there are <n> rows
-	repeats=<n> : only match if some row is repeated <n> times
-		use opt>=n to match at least <n> and opt<=n to match at most <n>
-	invert : invert all bits
-	reflect : reflect each byte (MSB first to MSB last)
-	match=<bits> : only match if the <bits> are found
-	preamble=<bits> : match and align at the <bits> preamble
-		<bits> is a row spec of {<bit count>}<bits as hex number>
-	unique : suppress duplicate row output
+     bits=<n> : only match if at least one row has <n> bits
+     rows=<n> : only match if there are <n> rows
+     repeats=<n> : only match if some row is repeated <n> times
+          use opt>=n to match at least <n> and opt<=n to match at most <n>
+     invert : invert all bits
+     reflect : reflect each byte (MSB first to MSB last)
+     match=<bits> : only match if the <bits> are found
+     preamble=<bits> : match and align at the <bits> preamble
+          <bits> is a row spec of {<bit count>}<bits as hex number>
+     unique : suppress duplicate row output
 
-	countonly : suppress detailed row output
+     countonly : suppress detailed row output
 
 E.g. -X "n=doorbell,m=OOK_PWM,s=400,l=800,r=7000,g=1000,match={24}0xa9878c,repeats>=3"
 
 
 
-		= Output format option =
+          = Output format option =
   [-F kv|json|csv|mqtt|influx|syslog|trigger|null] Produce decoded output in given format.
-	Without this option the default is KV output. Use "-F null" to remove the default.
-	Append output to file with :<filename> (e.g. -F csv:log.csv), defaults to stdout.
-	Specify MQTT server with e.g. -F mqtt://localhost:1883
-	Add MQTT options with e.g. -F "mqtt://host:1883,opt=arg"
-	MQTT options are: user=foo, pass=bar, retain[=0|1], <format>[=topic]
-	Supported MQTT formats: (default is all)
-	  events: posts JSON event data
-	  states: posts JSON state data
-	  devices: posts device and sensor info in nested topics
-	The topic string will expand keys like [/model]
-	E.g. -F "mqtt://localhost:1883,user=USERNAME,pass=PASSWORD,retain=0,devices=rtl_433[/id]"
-	With MQTT each rtl_433 instance needs a distinct driver selection. The MQTT Client-ID is computed from the driver string.
-	If you use multiple RTL-SDR, perhaps set a serial and select by that (helps not to get the wrong antenna).
-	Specify InfluxDB 2.0 server with e.g. -F "influx://localhost:9999/api/v2/write?org=<org>&bucket=<bucket>,token=<authtoken>"
-	Specify InfluxDB 1.x server with e.g. -F "influx://localhost:8086/write?db=<db>&p=<password>&u=<user>"
-	  Additional parameter -M time:unix:usec:utc for correct timestamps in InfluxDB recommended
-	Specify host/port for syslog with e.g. -F syslog:127.0.0.1:1514
+     Without this option the default is KV output. Use "-F null" to remove the default.
+     Append output to file with :<filename> (e.g. -F csv:log.csv), defaults to stdout.
+     Specify MQTT server with e.g. -F mqtt://localhost:1883
+     Add MQTT options with e.g. -F "mqtt://host:1883,opt=arg"
+     MQTT options are: user=foo, pass=bar, retain[=0|1], <format>[=topic]
+     Supported MQTT formats: (default is all)
+       events: posts JSON event data
+       states: posts JSON state data
+       devices: posts device and sensor info in nested topics
+     The topic string will expand keys like [/model]
+     E.g. -F "mqtt://localhost:1883,user=USERNAME,pass=PASSWORD,retain=0,devices=rtl_433[/id]"
+     With MQTT each rtl_433 instance needs a distinct driver selection. The MQTT Client-ID is computed from the driver string.
+     If you use multiple RTL-SDR, perhaps set a serial and select by that (helps not to get the wrong antenna).
+     Specify InfluxDB 2.0 server with e.g. -F "influx://localhost:9999/api/v2/write?org=<org>&bucket=<bucket>,token=<authtoken>"
+     Specify InfluxDB 1.x server with e.g. -F "influx://localhost:8086/write?db=<db>&p=<password>&u=<user>"
+       Additional parameter -M time:unix:usec:utc for correct timestamps in InfluxDB recommended
+     Specify host/port for syslog with e.g. -F syslog:127.0.0.1:1514
 
 
-		= Meta information option =
+          = Meta information option =
   [-M time[:<options>]|protocol|level|noise[:<secs>]|stats|bits] Add various metadata to every output line.
-	Use "time" to add current date and time meta data (preset for live inputs).
-	Use "time:rel" to add sample position meta data (preset for read-file and stdin).
-	Use "time:unix" to show the seconds since unix epoch as time meta data.
-	Use "time:iso" to show the time with ISO-8601 format (YYYY-MM-DD"T"hh:mm:ss).
-	Use "time:off" to remove time meta data.
-	Use "time:usec" to add microseconds to date time meta data.
-	Use "time:tz" to output time with timezone offset.
-	Use "time:utc" to output time in UTC.
-		(this may also be accomplished by invocation with TZ environment variable set).
-		"usec" and "utc" can be combined with other options, eg. "time:unix:utc:usec".
-	Use "replay[:N]" to replay file inputs at (N-times) realtime.
-	Use "protocol" / "noprotocol" to output the decoder protocol number meta data.
-	Use "level" to add Modulation, Frequency, RSSI, SNR, and Noise meta data.
-	Use "noise[:secs]" to report estimated noise level at intervals (default: 10 seconds).
-	Use "stats[:[<level>][:<interval>]]" to report statistics (default: 600 seconds).
-	  level 0: no report, 1: report successful devices, 2: report active devices, 3: report all
-	Use "bits" to add bit representation to code outputs (for debug).
+     Use "time" to add current date and time meta data (preset for live inputs).
+     Use "time:rel" to add sample position meta data (preset for read-file and stdin).
+     Use "time:unix" to show the seconds since unix epoch as time meta data.
+     Use "time:iso" to show the time with ISO-8601 format (YYYY-MM-DD"T"hh:mm:ss).
+     Use "time:off" to remove time meta data.
+     Use "time:usec" to add microseconds to date time meta data.
+     Use "time:tz" to output time with timezone offset.
+     Use "time:utc" to output time in UTC.
+          (this may also be accomplished by invocation with TZ environment variable set).
+          "usec" and "utc" can be combined with other options, eg. "time:unix:utc:usec".
+     Use "replay[:N]" to replay file inputs at (N-times) realtime.
+     Use "protocol" / "noprotocol" to output the decoder protocol number meta data.
+     Use "level" to add Modulation, Frequency, RSSI, SNR, and Noise meta data.
+     Use "noise[:secs]" to report estimated noise level at intervals (default: 10 seconds).
+     Use "stats[:[<level>][:<interval>]]" to report statistics (default: 600 seconds).
+       level 0: no report, 1: report successful devices, 2: report active devices, 3: report all
+     Use "bits" to add bit representation to code outputs (for debug).
 
 
-		= Read file option =
+          = Read file option =
   [-r <filename>] Read data from input file instead of a receiver
-	Parameters are detected from the full path, file name, and extension.
+     Parameters are detected from the full path, file name, and extension.
 
-	A center frequency is detected as (fractional) number suffixed with 'M',
-	'Hz', 'kHz', 'MHz', or 'GHz'.
+     A center frequency is detected as (fractional) number suffixed with 'M',
+     'Hz', 'kHz', 'MHz', or 'GHz'.
 
-	A sample rate is detected as (fractional) number suffixed with 'k',
-	'sps', 'ksps', 'Msps', or 'Gsps'.
+     A sample rate is detected as (fractional) number suffixed with 'k',
+     'sps', 'ksps', 'Msps', or 'Gsps'.
 
-	File content and format are detected as parameters, possible options are:
-	'cu8', 'cs16', 'cf32' ('IQ' implied), and 'am.s16'.
+     File content and format are detected as parameters, possible options are:
+     'cu8', 'cs16', 'cf32' ('IQ' implied), and 'am.s16'.
 
-	Parameters must be separated by non-alphanumeric chars and are case-insensitive.
-	Overrides can be prefixed, separated by colon (':')
+     Parameters must be separated by non-alphanumeric chars and are case-insensitive.
+     Overrides can be prefixed, separated by colon (':')
 
-	E.g. default detection by extension: path/filename.am.s16
-	forced overrides: am:s16:path/filename.ext
+     E.g. default detection by extension: path/filename.am.s16
+     forced overrides: am:s16:path/filename.ext
 
-	Reading from pipes also support format options.
-	E.g reading complex 32-bit float: CU32:-
+     Reading from pipes also support format options.
+     E.g reading complex 32-bit float: CU32:-
 
 
-		= Write file option =
+          = Write file option =
   [-w <filename>] Save data stream to output file (a '-' dumps samples to stdout)
   [-W <filename>] Save data stream to output file, overwrite existing file
-	Parameters are detected from the full path, file name, and extension.
+     Parameters are detected from the full path, file name, and extension.
 
-	File content and format are detected as parameters, possible options are:
-	'cu8', 'cs8', 'cs16', 'cf32' ('IQ' implied),
-	'am.s16', 'am.f32', 'fm.s16', 'fm.f32',
-	'i.f32', 'q.f32', 'logic.u8', 'ook', and 'vcd'.
+     File content and format are detected as parameters, possible options are:
+     'cu8', 'cs8', 'cs16', 'cf32' ('IQ' implied),
+     'am.s16', 'am.f32', 'fm.s16', 'fm.f32',
+     'i.f32', 'q.f32', 'logic.u8', 'ook', and 'vcd'.
 
-	Parameters must be separated by non-alphanumeric chars and are case-insensitive.
-	Overrides can be prefixed, separated by colon (':')
+     Parameters must be separated by non-alphanumeric chars and are case-insensitive.
+     Overrides can be prefixed, separated by colon (':')
 
-	E.g. default detection by extension: path/filename.am.s16
-	forced overrides: am:s16:path/filename.ext
+     E.g. default detection by extension: path/filename.am.s16
+     forced overrides: am:s16:path/filename.ext
 
 ```
 
